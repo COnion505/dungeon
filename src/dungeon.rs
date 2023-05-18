@@ -16,8 +16,8 @@ struct Dungeon {
 }
 
 
-pub fn run(input: String){
-    let loop_count:i32 = match input.parse() {
+pub fn run(loop_count: String, print_console: bool){
+    let loop_count:i32 = match loop_count.parse() {
         Ok(i) if i < 100 => 100,
         Ok(i) if i > 10000 => 10000,
         Ok(i) => i,
@@ -25,7 +25,7 @@ pub fn run(input: String){
     };
 
     let mut f = Field::new();
-    f.generate(loop_count);
+    f.generate(loop_count, print_console);
 
     let mut d = Dungeon {
         name: String::from("dungeon"),
@@ -38,13 +38,13 @@ pub fn run(input: String){
     
     let mut file2 = File::create("map-text.txt")
         .expect("can't create map-text.txt");
-    file2.write_all(d.field.print().as_bytes())
+    file2.write_all(d.field.print(false).as_bytes())
         .expect("can't write to file.");
 
     for _ in 0..loop_count {
         print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
         println!("loop count: {}", loop_count);
-        println!("{}",d.field.print());
+        println!("{}",d.field.print(false));
         //println!("{}",d.field.print_code());
         if d.field.get_current_cell().get_state() == State::Goal {
             println!("GOAL!!");

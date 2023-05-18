@@ -25,5 +25,9 @@ fn main() {
         Ok(i) => i,
         Err(_) => String::from("100"),
     };
-    dungeon::run(loop_count);
+    let print_console: bool = match env::var("PRINT_CONSOLE") {
+        Ok(i) => i.parse().unwrap_or_else(|_| false),
+        Err(_) => false,
+    };
+    dungeon::run(loop_count, print_console);
 }

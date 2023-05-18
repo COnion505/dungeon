@@ -97,7 +97,7 @@ impl Field{
         }
         return_bool
     }
-    pub fn make_road(&mut self, loop_count: i32){
+    pub fn make_road(&mut self, loop_count: i32, print_console: bool){
 		use rand::prelude::*;
         #[allow(unused)]
 		use std::thread::sleep;
@@ -113,9 +113,11 @@ impl Field{
                 3 => {self.go(Direction::Left, State::Space);},
                 _ => {},
             }
-			//print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
-			//self.print();
-			//sleep(Duration::from_millis(50));
+            if print_console {
+                print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+                self.print(print_console);
+                sleep(Duration::from_millis(10));
+            }
         }
         let index: usize = self.get_index_of(self.current_cell.get_x(), self.current_cell.get_y());
         self.cells.get_mut(index).unwrap().set_state(State::Goal);
@@ -143,9 +145,9 @@ impl Field{
             }
         }
     }
-    pub fn generate(&mut self, size: i32){
+    pub fn generate(&mut self, size: i32, print_console: bool){
         self.set_start_cell();
-        self.make_road(size);
+        self.make_road(size, print_console);
 		//road以外のセル生成
         for y in self.min_y()..=self.max_y(){
             for x in self.min_x()..=self.max_x(){
@@ -227,7 +229,7 @@ impl Field{
         }
     }
     #[allow(unused)]
-    pub fn print(&self) -> String{
+    pub fn print(&self, print_console: bool) -> String{
         let mut s = String::new();
         //println!("print current field...");
         for y in self.min_y()..=self.max_y(){
@@ -239,9 +241,11 @@ impl Field{
 					s.push_str(&self.get_cell_by_pos(x, y).get_state().print());
 				}
             }
-            s.push('\n');
+                s.push('\n');
         }
-        //println!("{}", &s);
+        if print_console {
+            println!("{}", &s);
+        }
         s
     }
     #[allow(unused)]
