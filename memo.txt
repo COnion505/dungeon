@@ -1,0 +1,95 @@
+# objects
+- Dungeon
+- Field
+- Cell
+- State
+- Character
+
+## Dungeon has...
+- Field
+
+## Field has...
+- Vec<cell>
+
+## Cell has...
+- State
+- x
+- y
+
+## State enumerates...
+- Unknown
+- Wall
+- Space
+- Start
+- Goal
+- Hole
+- FieldLimit
+- Enemy
+- Friend
+
+Stateにセルの情報を持たせる？Stateの情報は外部ファイルに記述して容易に変更できるようにする？
+Dungeonがゲーム構造体、メインループや各オブジェクトの管理を行う。
+DungeonがFieldを持っている。Fieldのメソッドを用いて状態を更新しながらループする。
+Dungeonで入力受付、データ更新、描写を行う。
+Fieldはセルのベクタとキャラクターの現在地を持っている。
+Fieldのメソッドは基本的に自身の情報を更新する。現在地やセル情報取得はコピーで返す。
+→更新したマップ情報をコピーで返すようにした方がよいか？そっちの方がRustっぽい書き方が出来る？
+多分戻り値返すようにした方がメソッドチェインで書けるようになるからよい？
+例： field.get_current_pos()	//Cellを返す
+		.get_state()			//Stateを返す
+		.to_code();				//i32を返す
+
+2022/11/22現在、Stateは列挙子でコード内に情報を列挙しているが、（print用のcharやto_code用のi32など。）
+構造体にして外部ファイルに書き出したほうが良い？
+その場合Stateに持たせる情報
+State構造体
+- name: String
+- code: u8
+- movable: bool  //
+- ridable: bool
+外部ファイルから読み取ったState情報のリストを持つ構造体？
+fieldにそのままStateのベクタ持たせればいいか。
+Stetes構造体
+- Vec<State>
+
+2022/11/22現在、敵、フレンドなどもState列挙の一部になっているが、彼らは動くし他に情報を持たせたいのでCharacter構造体に分離させる？
+彼らが動いた場合移動先のセルのState情報を上書きしてしまう。元のState、移動後のStateなどいちいち記憶させるのも面倒。
+それかStateはそのまま残してリスポーン地点とする？でもどのみち構造体のほうの情報に持たせるからいらないか。
+
+Charater構造体
+- name
+- code
+- sporn_x
+- sporn_y
+- x
+- y
+- 
+
+
+## memo
+32bitで3次元
+32^3 = 32,768bit = 4096バイト
+
+セルの種類（マイクラでいうブロック）
+8bit
+
+種類の情報
+名前
+自身の座標
+その他フラグ（落ちるか、動くか、壊せるかなど）
+
+# 2022/12/11
+## ゲームが持つ情報
+- 画面状態？（メニューか、ゲーム中か、?）
+- 
+## ダンジョンが持つ情報
+- ダンジョン名: String,
+- 階層数: i32,
+- 各階層のフィールド情報: Vec<Field>,
+
+## フィールドが持つ情報
+- 縦: i32,
+- 横: i32,
+- 初期フィールド情報: Vec<Cell>,
+- 現在のフィールド情報: Vec<Cell>,
+
